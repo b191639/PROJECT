@@ -1,2 +1,2 @@
-export const BASE_URL='https://medicarebookings-api.vercel.app/api/v1';
+export const BASE_URL=process.env.NEXT_PUBLIC_BASE_URL;
 export const token= localStorage.getItem('token');

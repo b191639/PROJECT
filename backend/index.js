@@ -17,7 +17,7 @@ const port=process.env.PORT || 8000
 
 const corsOptions={
      //origin-true allows in domain access   the server 
-     origin:true 
+     origin:'*' 
 }
 app.get('/',(req,res)=>{
     res.send('Api is working')

@@ -56,38 +56,38 @@ export const register=async(req,res)=>{
         res.status(500).json({success:false,message:'Internal server error,Try again'})
     }
 }
-export const login=async(req,res)=>{
-    const {email,password}=req.body
-    
-    try{
-        let user=null;
-        const patient=await User.findOne({email});
-        const doctor=await Doctor.findOne({email});
-        // console.log()
-        if(patient){
-            user=patient;
-        }
-        if(doctor){
-            user=doctor;
-        }  
-        //check if user exist or not
-        if(!user){
-            return res.status(404).json({message:"user not found"});
-        } 
-        const isPasswordMatch= bcrypt.compare(req.body.password,user.password); 
-       // console.log(isPasswordMatch)
-        if(!isPasswordMatch){
-            return res.status(400).json({status:false,message:"Invalid credentials"});
-            
-        }
-       
-        //get token
-        const token =generateToken(user);
-        const {password,role,appointments,...rest}=user._doc
+export const login = async (req, res) => {
+    const { email, password } = req.body;
 
-        res.status(200).json({status:true,message:'successfully login',token,data:{...rest},role,});
-        
-    } catch(err){
-          res.status(500).json({status: false,message: "failed to login",});
+    try {
+        let user = null;
+        const patient = await User.findOne({ email });
+        const doctor = await Doctor.findOne({ email });
+
+        if (patient) {
+            user = patient;
+        }
+        if (doctor) {
+            user = doctor;
+        }
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        const isPasswordMatch = await bcrypt.compare(password, user.password); // Await the result of bcrypt.compare
+
+        if (!isPasswordMatch) {
+            return res.status(400).json({ status: false, message: "Invalid credentials" });
+        }
+
+        // Generate token
+        const token = generateToken(user);
+        const { password: _, role, appointments, ...rest } = user._doc; // Destructure password and unused properties
+
+        res.status(200).json({ status: true, message: 'Successfully logged in', token, data: { ...rest }, role });
+    } catch (error) {
+        console.error("Login error:", error);
+        res.status(500).json({ status: false, message: "Failed to login" });
     }
 }
